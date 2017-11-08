@@ -1,0 +1,110 @@
+{
+  "index.html": {
+    "resources": [
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/mui.min.css",
+      "css/icons-extra.css",
+      "doc/bar-home.html"
+    ],
+    "refer": [
+      "doc/bar-times.html",
+      "doc/bar-home.html",
+      "doc/bar-setting.html"
+    ]
+  },
+  "doc/bar-setting.html": {
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "doc/bar-times.html",
+      "css/iconfont.css",
+      "js/LivellPayroll.js",
+      "css/icons-extra.css",
+      "css/livell.style.css",
+      "fonts/mui.ttf"
+    ],
+    "refer": [
+      "doc/bar-times.html",
+      "doc/lock.html"
+    ]
+  },
+  "doc/bar-home.html": {
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "js/mui.picker.min.js",
+      "js/mui.poppicker.js",
+      "css/mui.poppicker.css",
+      "css/mui.picker.min.css",
+      "images/yuantiao.jpg",
+      "images/down_1.gif",
+      "fonts/mui.ttf",
+      "css/iconfont.css",
+      "fonts/iconfont.ttf",
+      "css/icons-extra.css",
+      "js/LivellPayroll.js",
+      "js/mui.js",
+      "fonts/mui-icons-extra.ttf",
+      "css/livell.style.css"
+    ],
+    "refer": []
+  },
+  "login.html": {
+    "resources": [
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/mui.min.css",
+      "js/LivellPayroll.js",
+      "js/app.js",
+      "js/mui.enterfocus.js",
+      "fonts/mui-icons-extra.ttf",
+      "images/chengshi.jpg",
+      "css/icons-extra.css",
+      "images/630chengshi.jpg",
+      "css/livell.style.css"
+    ],
+    "refer": [
+      "main.html",
+      "unlock.html"
+    ]
+  },
+  "main.html": {
+    "resources": [
+      "fonts/mui.ttf",
+      "doc/bar-home.html",
+      "css/icons-extra.css",
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "doc/bar-times.html",
+      "doc/bar-home.html",
+      "doc/bar-setting.html"
+    ]
+  },
+  "unlock.html": {
+    "refer": [
+      "main.html",
+      "login.html"
+    ],
+    "resources": [
+      "js/mui.locker.js"
+    ]
+  },
+  "doc/bar-times.html": {
+    "resources": [
+      "fonts/mui-icons-extra.ttf",
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "css/iconfont.css",
+      "css/mui.min.css",
+      "css/icons-extra.css",
+      "css/livell.style.css",
+      "js/LivellPayroll.js"
+    ],
+    "refer": [
+      "doc/time_detail.html"
+    ]
+  }
+}

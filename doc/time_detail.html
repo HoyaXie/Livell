@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<style>
+			.mui-content>.mui-table-view:first-child {
+				margin-top: -1px;
+			}
+			
+			.information-title {
+				width: 30%;
+				height: auto;
+				float: left;
+				display: inline;
+			}
+			
+			.information-content {
+				max-width: initial;
+				width: 70%;
+				height: auto;
+				float: left;
+				display: inline;
+				color: #0062CC;
+				word-wrap: break-word;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">Time Information</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<div id="timeType_chart" style="width: 100%;height:240px;"></div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-pull-left information-title">
+						Project:
+					</div>
+					<div class="information-content">
+						<span id="txtProject"> </span>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-pull-left information-title">
+						Employee:
+					</div>
+					<div class="information-content">
+						<span id="txtEmployee"> </span>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-pull-left information-title">
+						TimeSheet Date:
+					</div>
+					<div class="information-content">
+						<span id="txtTimeSheetTime"> </span>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-pull-left information-title">
+						Start Time:
+					</div>
+					<div class="information-content">
+						<span id="txtStartTime"> </span>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-pull-left information-title">
+						Stop Time:
+					</div>
+					<div class="information-content">
+						<span id="txtStopTime"> </span>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-pull-left information-title">
+						Total Time:
+					</div>
+					<div class="information-content">
+						<span id="txtTotalTime"> </span> minute
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-pull-left information-title">
+						Note:
+					</div>
+					<div class="information-content">
+						<span id="txtNote"></span>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/echarts.common.min.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+				// 基于准备好的dom，初始化echarts实例
+				var myChart = echarts.init(document.getElementById('timeType_chart'));
+
+				var userId = plus.storage.getItem("userid");
+				var self = plus.webview.currentWebview();
+				var timeId = self.timeId;
+				mui.ajax({
+					url: ServeURL('TimeDetail'), //跨域URL
+					data: {
+						userId: userId,
+						timeId: timeId
+					},
+					type: "GET",
+					dataType: "json",
+					success: function(data) {
+						// 指定图表的配置项和数据 
+						var option = {
+							title: {
+								text: 'Time Pie (minute)',
+								textStyle: {
+									color: '#2c343c'
+								}
+							},
+							tooltip: {
+								trigger: 'item',
+								formatter: "{a} <br/>{b} : {c} minute ({d}%)"
+							},
+							series: [{
+								name: 'Time Type',
+								type: 'pie',
+								radius: '55%',
+								roseType: 'angle',
+								data: [{
+										value: data.RegulaWorkTime,
+										name: 'RegulaTime'
+									},
+									{
+										value: data.OverTimeWorkTime,
+										name: 'OverTime'
+									},
+									{
+										value: data.DoubleWorkTime,
+										name: 'DoubleTime'
+									}
+								]
+							}]
+						};
+
+						// 使用刚指定的配置项和数据显示图表。
+						myChart.setOption(option);
+
+						document.getElementById('txtProject').innerText = data.txtProject;
+						document.getElementById('txtEmployee').innerText = data.txtEmployee;
+						document.getElementById('txtTimeSheetTime').innerText = data.txtTimeSheetTime;
+						document.getElementById('txtStartTime').innerText = data.txtStartTime;
+						document.getElementById('txtStopTime').innerText = data.txtStopTime;
+						document.getElementById('txtTotalTime').innerText = data.txtTotalTime;
+						document.getElementById('txtNote').innerText = data.txtNote;
+					},
+					error: function(xhr, type, errorThrown) {
+						mui.toast(type);
+					}
+				});
+			});
+		</script>
+	</body>
+
+</html>

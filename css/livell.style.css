@@ -1,0 +1,17 @@
+.ui-page-login,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+.mui-content {
+	height: 100%;
+}
+
+.mui-bar>.bar-icon {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	font-size: 24px;
+}

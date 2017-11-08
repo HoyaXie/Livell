@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>setting</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/icons-extra.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/livell.style.css" rel="stylesheet" />
+		<style>
+			.mui-table-view {
+				margin-top: 20px;
+			}
+			
+			.mui-table-view:after {
+				height: 0;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.mui-table-view-divider {
+				background-color: #efeff4;
+				font-size: 14px;
+			}
+			
+			.mui-table-view-divider:before,
+			.mui-table-view-divider:after {
+				height: 0;
+			}
+			
+			.mui-btn {
+				position: relative;
+				padding: 10px;
+				margin-top: 50px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<!--			<a class="mui-icon mui-icon-contact mui-pull-left bar-icon"></a>-->
+			<!--	<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>-->
+			<h1 class="mui-title">Setting</h1>
+		</header>
+
+		<div class="mui-content">
+			<ul class="mui-table-view mui-table-view-chevron">
+				<li class="mui-table-view-cell">
+					<a id="share" class="mui-navigate-right">Account and security</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="tel" class="mui-navigate-right">Customer service hotline</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="update" class="mui-navigate-right">Check for update</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="feedback-btn" href="#feedback" class="mui-navigate-right">About Livell <i class="mui-pull-right update"><span class="mui-badge mui-badge-warning">V1.2.0</span></i></a>
+				</li>
+			</ul>
+			<ul class="mui-table-view mui-table-view-chevron">
+				<li class="mui-table-view-cell">
+					<a id="setlock" class="mui-navigate-right">Set pattern lock</a>
+				</li>
+			</ul>
+
+			<div class="mui-content-padded">
+				<button id='exit' class="mui-btn mui-btn-block mui-btn-danger" type='button'>Sign out</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+				var btn_setlock = document.getElementById('setlock');
+				btn_setlock.addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'lock.html',
+						id: 'lock',
+						show: {
+							autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+							aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true  
+						}
+					})
+				});
+				//客服电话
+				document.getElementById("tel").addEventListener('tap', function() {
+					plus.device.dial("502-2590936");
+				});
+				//退出操作******************
+				document.getElementById('exit').addEventListener('tap', function() {
+					if(mui.os.ios) {
+						app.setState({});
+						mui.openWindow({
+							url: '../login.html',
+							id: 'login',
+							show: {
+								aniShow: 'pop-in'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+						return;
+					}
+					var btnArray = [{
+						title: "Close Account"
+					}, {
+						title: "Close Application "
+					}];
+					plus.nativeUI.actionSheet({
+						cancel: "Cancel",
+						buttons: btnArray
+					}, function(event) {
+						var index = event.index;
+						switch(index) {
+							case 1:
+								//注销账号
+								app.setState({});
+								/*
+								 * 注意：
+								 * 1、因本示例应用启动页就是登录页面，因此注册成功后，直接显示登录页即可；
+								 * 2、如果真实案例中，启动页不是登录页，则需修改，使用mui.openWindow打开真实的登录页面
+								 */
+								plus.webview.getLaunchWebview().show("pop-in");
+								//若启动页不是登录页，则需通过如下方式打开登录页
+								//						mui.openWindow({
+								//							url: 'login.html',
+								//							id: 'login',
+								//							show: {
+								//								aniShow: 'pop-in'
+								//							}
+								//						});
+								break;
+							case 2:
+								plus.runtime.quit();
+								break;
+						}
+					});
+				}, false);
+				//检查更新
+				document.getElementById("update").addEventListener('tap', function() {
+					var server = "http://www.dcloud.io/check/update"; //获取升级描述文件服务器地址
+					mui.getJSON(server, {
+						"appid": plus.runtime.appid,
+						"version": plus.runtime.version,
+						"imei": plus.device.imei
+					}, function(data) {
+						if(data.status) {
+							plus.ui.confirm(data.note, function(i) {
+								if(0 == i) {
+									plus.runtime.openURL(data.url);
+								}
+							}, data.title, ["Update", "Cancel"]);
+						} else {
+							mui.toast('LivellPayroll is the latest version~')
+						}
+					});
+				});
+
+				//返回键提示退出
+				var backButtonPress = 0;
+				mui.back = function(event) {
+					backButtonPress++;
+					if(backButtonPress > 1) {
+						plus.runtime.quit();
+					} else {
+						plus.nativeUI.toast('Once again exit');
+					}
+					setTimeout(function() {
+						backButtonPress = 0;
+					}, 1000);
+					return false;
+				};
+			});
+		</script>
+	</body>
+
+</html>

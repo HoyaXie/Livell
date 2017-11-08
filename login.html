@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/icons-extra.css" rel="stylesheet" />
+		<link href="css/livell.style.css" rel="stylesheet" />
+		<style>
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 72%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.copyright-area {
+				position: absolute;
+				bottom: 10px;
+				left: 0px;
+				text-align: center;
+				width: 100%;
+				padding: 0px;
+				margin: 0px;
+				color: #999999;
+				font-size: 14px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-transparent">
+			<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>
+			<h1 class="mui-title">LivellPayroll</h1>
+		</header>
+		<div class="mui-content">
+			<!--静态图片-->
+			<div style="position: relative;">
+				<img id="img1" src="images/630chengshi.jpg" width="100%">
+			</div>
+
+			<form id='login-form' class="mui-input-group">
+				<div class="mui-input-row">
+					<label>E-mail</label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="Please enter your account">
+				</div>
+				<div class="mui-input-row">
+					<label>Password</label>
+					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="Please enter your password">
+				</div>
+			</form>
+			<form class="mui-input-group">
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell">
+						Stay signed in
+						<div id="autoLogin" class="mui-switch">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>
+				</ul>
+			</form>
+			<div class="mui-content-padded">
+				<button id='login' class="mui-btn mui-btn-block mui-btn-primary">Sign In</button>
+			</div>
+			<div class="mui-content-padded copyright-area" id="Copyright">
+				Copyright © 2017
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/mui.enterfocus.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/LivellPayroll.js"></script>
+		<script>
+			(function($, doc) {
+				$.init({
+					statusBarBackground: '#f7f7f7'
+				});
+				$.plusReady(function() {
+					plus.screen.lockOrientation("portrait-primary");
+					var settings = app.getSettings();
+					var state = app.getState();
+					var openMain = function() {
+						mui.openWindow({
+							url: 'main.html',
+							id: 'main',
+							show: {
+								autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+								aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+							},
+							waiting: {
+								autoShow: false, //自动显示等待框，默认为true  
+								title: 'waiting...' //等待对话框上显示的提示内容  
+							}
+						})
+
+					}
+					//检查 "登录状态/锁屏状态" 开始
+					if(settings.autoLogin && state.token && settings.gestures) {
+						$.openWindow({
+							url: 'unlock.html',
+							id: 'unlock',
+							show: {
+								aniShow: 'pop-in'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					} else if(settings.autoLogin && state.token) {
+						openMain();
+					} else {
+						app.setState(null);
+						//第三方登录
+					}
+					// close splash
+					setTimeout(function() {
+						//关闭 splash
+						plus.navigator.closeSplashscreen();
+					}, 600);
+					//检查 "登录状态/锁屏状态" 结束
+					var loginButton = doc.getElementById('login');
+					var accountBox = doc.getElementById('account');
+					var passwordBox = doc.getElementById('password');
+					var autoLoginButton = doc.getElementById("autoLogin");
+					loginButton.addEventListener('tap', function(event) {
+						var loginInfo = {
+							account: accountBox.value,
+							password: passwordBox.value
+						};
+
+						app.login(loginInfo, function(err) {
+							if(err) {
+								plus.nativeUI.toast(err);
+								return;
+							}
+							openMain();
+						});
+					});
+					$.enterfocus('#login-form input', function() {
+						$.trigger(loginButton, 'tap');
+					});
+					autoLoginButton.classList[settings.autoLogin ? 'add' : 'remove']('mui-active')
+					autoLoginButton.addEventListener('toggle', function(event) {
+						setTimeout(function() {
+							var isActive = event.detail.isActive;
+							settings.autoLogin = isActive;
+							app.setSettings(settings);
+						}, 50);
+					}, false);
+					//
+					var Copyright = document.getElementById('Copyright');
+					window.addEventListener('resize', function() {
+						Copyright.style.display = document.body.scrollHeight > 600 ? 'inline' : 'none';
+					}, false);
+					
+					//返回键提示退出
+					var backButtonPress = 0;
+					mui.back = function(event) {
+						backButtonPress++;
+						if(backButtonPress > 1) {
+							plus.runtime.quit();
+						} else {
+							plus.nativeUI.toast('Once again exit');
+						}
+						setTimeout(function() {
+							backButtonPress = 0;
+						}, 1000);
+						return false;
+					};
+
+				});
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

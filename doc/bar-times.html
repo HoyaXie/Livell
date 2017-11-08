@@ -1,0 +1,296 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>setting</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/icons-extra.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/livell.style.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-content>.mui-table-view:first-child {
+				margin-top: -1px;
+			}
+			
+			.time-status {
+				max-width: initial;
+				width: 60px;
+				height: 36px;
+				padding-top: 5px;
+			}
+			
+			.time-status>span {
+				padding: 7px;
+			}
+			
+			.meta-info {
+				position: absolute;
+				left: 72px;
+				font-size: 12px;
+				color: #8f8f94;
+				top: 20px;
+				width: 300px;
+			}
+			
+			.meta-body {
+				position: absolute;
+				left: 72px;
+				right: 10px;
+				width: 300px;
+			}
+			
+			.author {
+				font-style: oblique;
+			}
+			
+			.meta-body .total_time {
+				float: right;
+				color: #007AFF;
+			}
+			
+			.meta-info .time {
+				float: right;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" id="scrollToTop">
+			<a class="mui-icon mui-icon-bars mui-pull-left bar-icon"></a>
+			<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>
+			<h1 class="mui-title">Times</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll" id="time-list">
+				<!--数据列表-->
+				<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-time-list">
+				</ul>
+			</div>
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style: 'circle',
+						callback: pulldownRefresh
+					},
+					up: {
+						auto: true,
+						contentrefresh: 'loading...',
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			var count = -1;
+			var userId = "";
+			mui.plusReady(function() {
+
+				userId = plus.storage.getItem("userid");
+
+				var scrollToTopBox = document.getElementById('scrollToTop');
+				scrollToTopBox.addEventListener('tap', function(e) {
+					scrollUp();
+
+				});
+
+				mui('#view-time-list').on('tap', '.btn-time-delete', function(event) {
+					var elem = this;
+					var Id = elem.getAttribute("data-timeId")
+					var li = elem.parentNode.parentNode;
+					mui.confirm('Are you sure to delete the record ？', 'Confirmation', ['Yes', 'No'], function(e) {
+						mui.ajax({
+							url: ServeURL('DeleteTime'), //跨域URL
+							data: {
+								userId: userId,
+								timeId: Id
+							},
+							type: "GET",
+							dataType: "json",
+							success: function(data) {
+								if(data.status == 'success') {
+									if(e.index == 0) {
+										li.parentNode.removeChild(li);
+									} else {
+										setTimeout(function() {
+											$.swipeoutClose(li);
+										}, 0);
+									};
+								} else {
+									mui.toast(data.message);
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								mui.toast(type);
+							}
+						});
+					});
+				});
+
+				mui('#view-time-list').on('tap', '.btn-time-detail', function(event) {
+					var elem = this;
+					var timeId = elem.getAttribute("data-timeId");
+					mui.openWindow({
+						url: 'time_detail.html',
+						id: 'time_detail',
+						extras: {
+							timeId: timeId
+						},
+						show: {
+							autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+							aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true  
+						}
+					})
+				});
+
+				//返回键提示退出
+				var backButtonPress = 0;
+				mui.back = function(event) {
+					backButtonPress++;
+					if(backButtonPress > 1) {
+						plus.runtime.quit();
+					} else {
+						plus.nativeUI.toast('Once again exit');
+					}
+					setTimeout(function() {
+						backButtonPress = 0;
+					}, 1000);
+					return false;
+				};
+
+			});
+
+			function pullupRefresh() {
+				var table = document.body.querySelector('.mui-table-view');
+				var cells = document.body.querySelectorAll('.mui-table-view-cell');
+				var newCount = cells.length > 0 ? 5 : 20; //首次加载20条，满屏 
+				mui.ajax({
+					url: ServeURL('GetTimes'), //跨域URL  
+					async: false,
+					data: {
+						cells: cells.length,
+						newCount: newCount,
+						userId: userId
+					},
+					type: "GET",
+					dataType: "json",
+					timeout: 5000, //超时时间设置为5秒；
+					success: function(data) {
+						count = data.length;
+						data.forEach(function(row, index) {
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell';
+							li.innerHTML = ItemHtml(row);
+							table.appendChild(li);
+						});
+					},
+					error: function(xhr, type, errorThrown) {
+						mui.toast(type);
+					}
+				});
+				mui('#pullrefresh').pullRefresh().endPullup(count == 0); //参数为true代表没有更多数据了。
+			};
+
+			function ItemHtml(_time) {
+				var status_color = "mui-badge-primary";
+				var btn_html = '<a class="mui-btn mui-btn-grey mui-icon-extra mui-icon-extra-topic btn-time-detail" data-timeId = "' + _time.Id + '"></a>';
+				if(_time.Status == "Passing") {
+					status_color = "mui-badge-success";
+				} else if(_time.Status == "Locked") {
+					status_color = "mui-badge-danger";
+				} else {
+					btn_html = btn_html + '<a class="mui-btn mui-btn-red mui-icon mui-icon-trash btn-time-delete" data-timeId = "' + _time.Id + '"></a>';
+					status_color = "mui-badge-primary";
+				};
+				var html = '<div class="mui-slider-right mui-disabled">' + btn_html + '</div>' +
+					'<div class="mui-slider-handle"><div class="mui-table-cell">' +
+					'<div class="time-status mui-pull-left">' +
+					'<span class="mui-badge ' + status_color + '">' + _time.Status + '</span>' +
+					'</div>' +
+					'<div class="meta-body">' +
+					'<span class="jobName">' + _time.JobName + '</span>' +
+					'<span class="total_time">' + _time.TotalWorkTime + ' minute</span>' +
+					'</div>' +
+					'<div class="meta-info">' +
+					'<span class="author">' + _time.EmployeeName + '</span>' +
+					'<span class="time">' + _time.TimeSheetDate + '</span>' +
+					'</div>' +
+					'</div></div>';
+				return html;
+			}
+
+			function addData() {
+				var table = document.body.querySelector('.mui-table-view');
+				var cells = document.body.querySelectorAll('.mui-table-view-cell');
+				mui.ajax({
+					url: ServeURL('GetTimes'), //跨域URL
+					data: {
+						cells: cells.length,
+						newCount: cells.length + 5,
+						userId: userId
+					},
+					type: "GET",
+					dataType: "json",
+					timeout: 5000, //超时时间设置为5秒；
+					success: function(data) {
+						data.forEach(function(row, index) {
+							console.log(row.StartDate);
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell';
+							li.innerHTML = ItemHtml(row);
+							//下拉刷新，新纪录插到最前面；
+							table.insertBefore(li, table.firstChild);
+						});
+						mui.toast("Load " + data.length + " records");
+					},
+					error: function(xhr, type, errorThrown) {
+						mui.toast(type);
+					}
+				});
+			}
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				var table = document.body.querySelector('.mui-table-view');
+				var cells = document.body.querySelectorAll('.mui-table-view-cell');
+				mui.ajax({
+					url: ServeURL('GetTimes'), //跨域URL  
+					data: {
+						cells: 0,
+						newCount: 20,
+						userId: userId
+					},
+					type: "GET",
+					dataType: "json",
+					timeout: 5000, //超时时间设置为5秒；
+					success: function(data) {
+						table.innerHTML = '';
+						data.forEach(function(row, index) {
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell';
+							li.innerHTML = ItemHtml(row);
+							table.appendChild(li);
+						});
+					},
+					error: function(xhr, type, errorThrown) {
+						mui.toast(type);
+					}
+				});
+				mui('#pullrefresh').pullRefresh().endPulldown();
+
+			}
+		</script>
+	</body>
+
+</html>
