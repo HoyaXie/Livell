@@ -37,8 +37,8 @@
 
 	<body>
 		<header class="mui-bar mui-bar-transparent">
-			<a class="mui-icon mui-icon-bars mui-pull-left bar-icon"></a>
-		<!--	<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>-->
+			<!--			<a class="mui-icon mui-icon-bars mui-pull-left bar-icon"></a>-->
+			<!--	<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>-->
 			<h1 class="mui-title">Time Card</h1>
 		</header>
 
@@ -56,6 +56,10 @@
 			</div>
 
 			<div class="mui-content-padded">
+				<button type="button" style="display: none;" id="Payroll-TimeReset" class="mui-btn mui-btn-block mui-btn-warning"><span class="mui-icon iconfont icon-zhongzhi"></span>  Time Reset</button>
+				<button type="button" style="display: none;" id="Payroll-TimeOut" class="mui-btn mui-btn-block mui-btn-danger"><span class="mui-icon iconfont icon-jieshuanniu"></span>  Time Out</button>
+				<button type="button" style="display: none;" id="Payroll-TimeIn" class="mui-btn mui-btn-block mui-btn-primary"><span class="mui-icon iconfont icon-kaishianniu"></span>  Time In</button>
+
 				<button id='showUserPicker' class="mui-btn mui-btn-block" type='button' data-jobId=''>Choose Job...</button>
 			</div>
 
@@ -63,18 +67,10 @@
 				<textarea id="textarea" rows="5" placeholder="Please be brief... "></textarea>
 			</div>
 
-			<div class="mui-content-padded">
-				<button type="button" style="display: none;" id="Payroll-TimeIn" class="mui-btn mui-btn-block mui-btn-primary"><span class="mui-icon iconfont icon-kaishianniu"></span>  Time In</button>
-				<button type="button" style="display: none;" id="Payroll-TimeReset" class="mui-btn mui-btn-block mui-btn-warning"><span class="mui-icon iconfont icon-zhongzhi"></span>  Time Reset</button>
-				<button type="button" style="display: none;" id="Payroll-TimeOut" class="mui-btn mui-btn-block mui-btn-danger"><span class="mui-icon iconfont icon-jieshuanniu"></span>  Time Out</button>
-			</div>
-
 		</div>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/mui.picker.min.js"></script>
 		<script src="../js/mui.poppicker.js"></script>
-		<!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=HR3RRyTsXYdQ3QzzG5yUkg0q"></script>
-		<script type="text/javascript" src="http://developer.baidu.com/map/jsdemo/demo/convertor.js"></script>-->
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZMuMMbE7Mkf7ypTLBFiPBCjfy-UoqeY8&sensor=true&libraries=geometry"></script>
 		<script src="../js/LivellPayroll.js"></script>
 		<script type="text/javascript">
@@ -107,6 +103,30 @@
 				return sI;
 			};
 
+			function checkGPS() {
+				if(mui.os.android) {
+					var context = plus.android.importClass("android.content.Context");
+					var locationManager = plus.android.importClass("android.location.LocationManager");
+					var main = plus.android.runtimeMainActivity();
+					var mainSvr = main.getSystemService(context.LOCATION_SERVICE);
+					androidIsOpen = mainSvr.isProviderEnabled(locationManager.GPS_PROVIDER);
+					if(!androidIsOpen) {
+						var btnArray = ['Cancel', 'Ok'];
+						mui.confirm('The current device does not open location service ！', 'Warning', btnArray, function(e) {
+							if(e.index == 1) {
+								var main = plus.android.runtimeMainActivity(); //获取activity
+								var Intent = plus.android.importClass('android.content.Intent');
+								var Settings = plus.android.importClass('android.provider.Settings');
+								var intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS); //可设置表中所有Action字段
+								main.startActivity(intent);
+							} else {
+								mui.toast('The location service will not be available！');
+							}
+						})
+					}
+				};
+			};
+
 			mui.init()
 			mui.plusReady(function() {
 				function CenterControl(controlDiv, map) {
@@ -133,6 +153,7 @@
 				};
 
 				function googlePoint(position) {
+
 					latitude = position.coords.latitude; //纬度
 					longitude = position.coords.longitude; //经度
 
@@ -168,7 +189,8 @@
 				function refreshPoint(position) {
 					if(latitude != position.coords.latitude || longitude != position.coords.longitude) {
 						latitude = position.coords.latitude; //纬度
-						longitude = position.coords.longitude; //经度
+						longitude = position.coords.longitude; //经度 
+
 						var LatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 						if(userMarker != null) {
 							userMarker.setMap(null);
@@ -205,12 +227,12 @@
 					}
 				};
 
-				function clearWatch() {
-					if(watchid) {
-						plus.geolocation.clearWatch(watchId);
-						watchId = null;
-					}
-				};
+				//				function clearWatch() {
+				//					if(watchid) {
+				//						plus.geolocation.clearWatch(watchId);
+				//						watchId = null;
+				//					}
+				//				};
 
 				var userMarker = null;
 				var jobMarker = null;
@@ -239,7 +261,7 @@
 						data: {
 							userId: userId
 						},
-						async:false,
+						async: false,
 						type: "GET",
 						dataType: "json",
 						success: function(data) {
@@ -248,7 +270,7 @@
 						error: function(xhr, type, errorThrown) {
 							mui.toast(type);
 						}
-					}); 
+					});
 					userPicker.show(function(items) {
 						var choose_json = items[0];
 						var key = choose_json['value'];
@@ -359,7 +381,7 @@
 					var LatLng2 = new google.maps.LatLng(joblatitude, joblongitude);
 					var distanceMeter = google.maps.geometry.spherical.computeDistanceBetween(LatLng1, LatLng2);
 					if(jobIsLocation && distanceMeter > 3000) {
-						mui.alert('The current location is not located near the work place (Within 3 kilometers).', 'Warning', 'Confirm');
+						mui.alert('The current location is not located near the work place (Within 3 kilometers).', 'Warning', 'Ok');
 						return;
 					};
 					var AutoTimeId = AutoShow(LocalToUtc(new Date()) / 1000);

@@ -1,5 +1,5 @@
-var ServerAddress = 'http://192.168.1.3:57110/AppServer/';
-//var ServerAddress = 'http://app.livell.com/AppServer/';
+//var ServerAddress = 'http://192.168.1.3:57110/AppServer/';
+var ServerAddress = 'http://app.livell.com/AppServer/';
 
 function ServeURL(action) {
 	return ServerAddress + action;
