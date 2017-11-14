@@ -27,7 +27,7 @@
 			url: ServeURL('AppLogin'), //跨域URL
 			data: loginInfo,
 			type: "GET",
-			dataType: "json",
+			dataType: "json", 
 			timeout: 5000, //超时时间设置为5秒；
 			success: function(data) {
 				if(data.status == 'success') {
@@ -38,7 +38,7 @@
 				}
 			},
 			error: function(xhr, type, errorThrown) {
-				return callback(type);
+				return callback(errorThrown);
 			}
 		});
 	};
@@ -46,7 +46,7 @@
 	owner.createState = function(name, callback) {
 		var state = owner.getState();
 		state.account = name;
-		state.token = "token123456789";
+		state.token = "livellzxcasdqwe123!@#";
 		owner.setState(state);
 		return callback();
 	};

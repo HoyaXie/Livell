@@ -58,8 +58,8 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav" id="scrollToTop">
-<!--			<a class="mui-icon mui-icon-bars mui-pull-left bar-icon"></a>-->
-<!--			<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>-->
+			<!--			<a class="mui-icon mui-icon-bars mui-pull-left bar-icon"></a>-->
+			<!--			<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>-->
 			<h1 class="mui-title">Times</h1>
 		</header>
 		<!--下拉刷新容器-->
@@ -72,6 +72,8 @@
 		</div>
 
 		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/md5.min.js"></script>
 		<script src="../js/LivellPayroll.js"></script>
 		<script type="text/javascript">
 			mui.init({
@@ -108,6 +110,7 @@
 					mui.confirm('Are you sure to delete the record ？', 'Confirmation', ['Yes', 'No'], function(e) {
 						mui.ajax({
 							url: ServeURL('DeleteTime'), //跨域URL
+							headers: Authorize(),
 							data: {
 								userId: userId,
 								timeId: Id
@@ -127,8 +130,13 @@
 									mui.toast(data.message);
 								}
 							},
-							error: function(xhr, type, errorThrown) {
-								mui.toast(type);
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								if(XMLHttpRequest.status == 403) {
+									app.setState({});
+									plus.webview.getLaunchWebview().show("pop-in");
+								} else {
+									mui.toast(textStatus);
+								}
 							}
 						});
 					});
@@ -176,6 +184,7 @@
 				var newCount = cells.length > 0 ? 5 : 20; //首次加载20条，满屏 
 				mui.ajax({
 					url: ServeURL('GetTimes'), //跨域URL  
+					headers: Authorize(),
 					async: false,
 					data: {
 						cells: cells.length,
@@ -194,8 +203,13 @@
 							table.appendChild(li);
 						});
 					},
-					error: function(xhr, type, errorThrown) {
-						mui.toast(type);
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
 					}
 				});
 				mui('#pullrefresh').pullRefresh().endPullup(count == 0); //参数为true代表没有更多数据了。
@@ -234,6 +248,7 @@
 				var cells = document.body.querySelectorAll('.mui-table-view-cell');
 				mui.ajax({
 					url: ServeURL('GetTimes'), //跨域URL
+					headers: Authorize(),
 					data: {
 						cells: cells.length,
 						newCount: cells.length + 5,
@@ -253,8 +268,13 @@
 						});
 						mui.toast("Load " + data.length + " records");
 					},
-					error: function(xhr, type, errorThrown) {
-						mui.toast(type);
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
 					}
 				});
 			}
@@ -265,7 +285,8 @@
 				var table = document.body.querySelector('.mui-table-view');
 				var cells = document.body.querySelectorAll('.mui-table-view-cell');
 				mui.ajax({
-					url: ServeURL('GetTimes'), //跨域URL  
+					url: ServeURL('GetTimes'), //跨域URL 
+					headers: Authorize(),
 					data: {
 						cells: 0,
 						newCount: 20,
@@ -283,8 +304,13 @@
 							table.appendChild(li);
 						});
 					},
-					error: function(xhr, type, errorThrown) {
-						mui.toast(type);
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
 					}
 				});
 				mui('#pullrefresh').pullRefresh().endPulldown();

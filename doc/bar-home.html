@@ -71,7 +71,9 @@
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/mui.picker.min.js"></script>
 		<script src="../js/mui.poppicker.js"></script>
+		<script src="../js/app.js"></script>
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZMuMMbE7Mkf7ypTLBFiPBCjfy-UoqeY8&sensor=true&libraries=geometry"></script>
+		<script src="../js/md5.min.js"></script>
 		<script src="../js/LivellPayroll.js"></script>
 		<script type="text/javascript">
 			function PrefixInteger(num, length) { 
@@ -129,6 +131,7 @@
 
 			mui.init()
 			mui.plusReady(function() {
+
 				function CenterControl(controlDiv, map) {
 					// Set CSS for the control border.
 					var controlUI = document.createElement('div');
@@ -258,6 +261,7 @@
 				showUserPickerButton.addEventListener('tap', function(event) {
 					mui.ajax({
 						url: ServeURL('GetJobBinding'),
+						headers: Authorize(),
 						data: {
 							userId: userId
 						},
@@ -267,8 +271,13 @@
 						success: function(data) {
 							userPicker.setData(data);
 						},
-						error: function(xhr, type, errorThrown) {
-							mui.toast(type);
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							if(XMLHttpRequest.status == 403) {
+								app.setState({});
+								plus.webview.getLaunchWebview().show("pop-in");
+							} else {
+								mui.toast(textStatus);
+							}
 						}
 					});
 					userPicker.show(function(items) {
@@ -282,6 +291,7 @@
 						//获取Job定位点
 						mui.ajax({
 							url: ServeURL('GetJobLocation'), //跨域URL
+							headers: Authorize(),
 							data: {
 								jobId: key
 							},
@@ -311,8 +321,13 @@
 									});
 								}
 							},
-							error: function(xhr, type, errorThrown) {
-								mui.toast(type);
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								if(XMLHttpRequest.status == 403) {
+									app.setState({});
+									plus.webview.getLaunchWebview().show("pop-in");
+								} else {
+									mui.toast(textStatus);
+								}
 							}
 						})
 
@@ -322,6 +337,7 @@
 				if(userId != null) {
 					mui.ajax({
 						url: ServeURL('InitializeTimeCard'), //跨域URL
+						headers: Authorize(),
 						data: {
 							userId: userId
 						},
@@ -363,8 +379,13 @@
 							}
 
 						},
-						error: function(xhr, type, errorThrown) {
-							mui.toast(type);
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							if(XMLHttpRequest.status == 403) {
+								app.setState({});
+								plus.webview.getLaunchWebview().show("pop-in");
+							} else {
+								mui.toast(textStatus);
+							}
 						}
 					});
 				};
@@ -389,16 +410,31 @@
 					btn_TimeIn.style.display = "none"
 					btn_TimeOut.style.display = "inline";
 					btn_TimeReset.style.display = "inline";
-					mui.post(ServeURL('TimeIn'), {
-						jobId: ChooseJob,
-						userId: userId,
-						note: txtNote
-					}, function(data) {
-						if(data.status == 'success') {
-							input_note.disabled = true;
-							showUserPickerButton.disabled = true;
-						} else {
-							mui.toast(data.message);
+					mui.ajax({
+						url: ServeURL('TimeIn'), //跨域URL
+						headers: Authorize(),
+						data: {
+							jobId: ChooseJob,
+							userId: userId,
+							note: txtNote
+						},
+						type: "GET",
+						dataType: "json",
+						success: function(data) {
+							if(data.status == 'success') {
+								input_note.disabled = true;
+								showUserPickerButton.disabled = true;
+							} else {
+								mui.toast(data.message);
+							}
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							if(XMLHttpRequest.status == 403) {
+								app.setState({});
+								plus.webview.getLaunchWebview().show("pop-in");
+							} else {
+								mui.toast(textStatus);
+							}
 						}
 					});
 				});
@@ -409,17 +445,32 @@
 					btn_TimeOut.style.display = "none"
 					btn_TimeReset.style.display = "none";
 					btn_TimeIn.style.display = "inline";
-					mui.post(ServeURL('TimeOut'), {
-						userId: userId
-					}, function(data) {
-						if(data.status == 'success') {
-							input_note.value = "";
-							input_note.disabled = false;
-							showUserPickerButton.innerText = "Choose Job...";
-							showUserPickerButton.setAttribute("data-jobId", "");
-							showUserPickerButton.disabled = false;
-						} else {
-							mui.toast(data.message);
+					mui.ajax({
+						url: ServeURL('TimeOut'), //跨域URL
+						headers: Authorize(),
+						data: {
+							userId: userId
+						},
+						type: "GET",
+						dataType: "json",
+						success: function(data) {
+							if(data.status == 'success') {
+								input_note.value = "";
+								input_note.disabled = false;
+								showUserPickerButton.innerText = "Choose Job...";
+								showUserPickerButton.setAttribute("data-jobId", "");
+								showUserPickerButton.disabled = false;
+							} else {
+								mui.toast(data.message);
+							}
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							if(XMLHttpRequest.status == 403) {
+								app.setState({});
+								plus.webview.getLaunchWebview().show("pop-in");
+							} else {
+								mui.toast(textStatus);
+							}
 						}
 					});
 				});
@@ -430,17 +481,32 @@
 					btn_TimeOut.style.display = "none"
 					btn_TimeReset.style.display = "none";
 					btn_TimeIn.style.display = "inline";
-					mui.post(ServeURL('TimeReset'), {
-						userId: userId
-					}, function(data) {
-						if(data.status == 'success') {
-							input_note.value = "";
-							input_note.disabled = false;
-							showUserPickerButton.innerText = "Choose Job...";
-							showUserPickerButton.setAttribute("data-jobId", "");
-							showUserPickerButton.disabled = false;
-						} else {
-							mui.toast(data.message);
+					mui.ajax({
+						url: ServeURL('TimeReset'), //跨域URL
+						headers: Authorize(),
+						data: {
+							userId: userId
+						},
+						type: "GET",
+						dataType: "json",
+						success: function(data) {
+							if(data.status == 'success') {
+								input_note.value = "";
+								input_note.disabled = false;
+								showUserPickerButton.innerText = "Choose Job...";
+								showUserPickerButton.setAttribute("data-jobId", "");
+								showUserPickerButton.disabled = false;
+							} else {
+								mui.toast(data.message);
+							}
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							if(XMLHttpRequest.status == 403) {
+								app.setState({});
+								plus.webview.getLaunchWebview().show("pop-in");
+							} else {
+								mui.toast(textStatus);
+							}
 						}
 					});
 				});

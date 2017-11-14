@@ -100,6 +100,7 @@
 		</div>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/echarts.common.min.js"></script>
+		<script src="../js/app.js"></script>
 		<script src="../js/LivellPayroll.js"></script>
 		<script type="text/javascript">
 			mui.init()
@@ -112,6 +113,7 @@
 				var timeId = self.timeId;
 				mui.ajax({
 					url: ServeURL('TimeDetail'), //跨域URL
+					headers: Authorize(),
 					data: {
 						userId: userId,
 						timeId: timeId
@@ -163,8 +165,13 @@
 						document.getElementById('txtTotalTime').innerText = data.txtTotalTime;
 						document.getElementById('txtNote').innerText = data.txtNote;
 					},
-					error: function(xhr, type, errorThrown) {
-						mui.toast(type);
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
 					}
 				});
 			});
