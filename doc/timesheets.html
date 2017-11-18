@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>timesheets</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" id="scrollToTop">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">Time Sheets</h1>
+		</header>
+
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll" id="time-list">
+				<!--数据列表-->
+				<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="timesheets-list">
+				</ul>
+			</div>
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/md5.min.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style: 'circle',
+						callback: pulldownRefresh
+					},
+					up: {
+						auto: true,
+						contentrefresh: 'loading...',
+						callback: pullupRefresh
+					}
+				}
+			});
+			mui.plusReady(function() {
+				var state = JSON.parse(localStorage.getItem('$state'));
+				var userId = state.userId;
+				var count = -1;
+
+				var scrollToTopBox = document.getElementById('scrollToTop');
+				scrollToTopBox.addEventListener('tap', function(e) {
+					scrollUp();
+				});
+			})
+		</script>
+	</body>
+
+</html>

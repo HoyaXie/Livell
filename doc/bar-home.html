@@ -37,11 +37,11 @@
 
 	<body>
 		<header class="mui-bar mui-bar-transparent">
+
 			<!--			<a class="mui-icon mui-icon-bars mui-pull-left bar-icon"></a>-->
 			<!--	<a class="mui-icon-extra mui-icon-extra-custom mui-pull-right bar-icon bar-btn-callcustom"></a>-->
 			<h1 class="mui-title">Time Card</h1>
 		</header>
-
 		<div class="mui-content">
 			<!--静态图片-->
 			<div style="position: relative;">
@@ -68,6 +68,7 @@
 			</div>
 
 		</div>
+
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/mui.picker.min.js"></script>
 		<script src="../js/mui.poppicker.js"></script>
@@ -255,7 +256,8 @@
 				var bar_transparent = document.getElementsByClassName('mui-bar-transparent');
 				var map = null;
 
-				var userId = plus.storage.getItem("userid");
+				var state = JSON.parse(localStorage.getItem('$state'));
+				var userId = state.userId;
 
 				var showUserPickerButton = document.getElementById('showUserPicker');
 				showUserPickerButton.addEventListener('tap', function(event) {
@@ -510,21 +512,6 @@
 						}
 					});
 				});
-
-				//返回键提示退出
-				var backButtonPress = 0;
-				mui.back = function(event) {
-					backButtonPress++;
-					if(backButtonPress > 1) {
-						plus.runtime.quit();
-					} else {
-						plus.nativeUI.toast('Once again exit');
-					}
-					setTimeout(function() {
-						backButtonPress = 0;
-					}, 1000);
-					return false;
-				};
 
 				plus.geolocation.getCurrentPosition(googlePoint, errorHandler);
 

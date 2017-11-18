@@ -214,7 +214,9 @@
 					"fonts/mui.ttf"
 				],
 				"refer": [
-					"doc/lock.html"
+					"doc/lock.html",
+					"doc/account_safety.html",
+					"doc/info.html"
 				],
 				"priority": 0
 			},
@@ -270,7 +272,8 @@
 				],
 				"refer": [
 					"doc/bar-times.html",
-					"doc/bar-setting.html"
+					"doc/bar-setting.html",
+					"index-menu.html"
 				],
 				"priority": 0
 			},

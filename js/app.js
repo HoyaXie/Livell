@@ -26,13 +26,14 @@
 		mui.ajax({
 			url: ServeURL('AppLogin'), //跨域URL
 			data: loginInfo,
+			async: false,
 			type: "GET",
-			dataType: "json", 
+			dataType: "json",
 			timeout: 5000, //超时时间设置为5秒；
 			success: function(data) {
 				if(data.status == 'success') {
-					plus.storage.setItem('userid', data.userId);
-					return owner.createState(loginInfo.account, callback);
+//					plus.storage.setItem('userid', data.UserId);
+					return owner.createState(loginInfo.account,data.UserId,data.TimeZone,data.NickName, callback);
 				} else {
 					return callback(data.message);
 				}
@@ -43,9 +44,12 @@
 		});
 	};
 
-	owner.createState = function(name, callback) {
+	owner.createState = function(_account,_userId,_timeZone,_nickName, callback) {
 		var state = owner.getState();
-		state.account = name;
+		state.account = _account;
+		state.userId = _userId;
+		state.timeZone = _timeZone;
+		state.nickName = _nickName;
 		state.token = "livellzxcasdqwe123!@#";
 		owner.setState(state);
 		return callback();

@@ -50,26 +50,26 @@
 		<div class="mui-content">
 			<ul class="mui-table-view mui-table-view-chevron">
 				<li class="mui-table-view-cell">
-					<a id="share" class="mui-navigate-right">Account and security</a>
+					<a id="account-and-security" class="mui-navigate-right">Account and Security</a>
 				</li>
 				<li class="mui-table-view-cell">
-					<a id="tel" class="mui-navigate-right">Customer service hotline</a>
+					<a id="support" class="mui-navigate-right" href="mailto:services@halfpricesoft.com?subject=Livell Support">Customer Service Email</a>
 				</li>
 				<li class="mui-table-view-cell">
-					<a id="update" class="mui-navigate-right">Check for update</a>
+					<a id="update" class="mui-navigate-right">Check For Update</a>
 				</li>
 				<li class="mui-table-view-cell">
-					<a id="feedback-btn" href="#feedback" class="mui-navigate-right">About Livell <i class="mui-pull-right update"><span class="mui-badge mui-badge-warning">V1.2.0</span></i></a>
+					<a id="about" class="mui-navigate-right">About Livell <i class="mui-pull-right update"><span class="mui-badge mui-badge-warning">V1.2.0</span></i></a>
 				</li>
 			</ul>
 			<ul class="mui-table-view mui-table-view-chevron">
 				<li class="mui-table-view-cell">
-					<a id="setlock" class="mui-navigate-right">Set pattern lock</a>
+					<a id="setlock" class="mui-navigate-right">Set Pattern Lock</a>
 				</li>
 			</ul>
 
 			<div class="mui-content-padded">
-				<button id='exit' class="mui-btn mui-btn-block mui-btn-danger" type='button'>Sign out</button>
+				<button id='exit' class="mui-btn mui-btn-block mui-btn-danger" type='button'>Sign Out</button>
 			</div>
 		</div>
 		<script src="../js/mui.min.js"></script>
@@ -78,6 +78,12 @@
 		<script type="text/javascript">
 			mui.init()
 			mui.plusReady(function() {
+				//预加载Info页面
+				var pageInfo = mui.preload({
+					url: 'info.html',
+					id: 'info'
+				});
+
 				var btn_setlock = document.getElementById('setlock');
 				btn_setlock.addEventListener('tap', function() {
 					mui.openWindow({
@@ -92,10 +98,41 @@
 						}
 					})
 				});
-				//客服电话
-				document.getElementById("tel").addEventListener('tap', function() {
-					plus.device.dial("502-2590936");
+
+				var btn_about = document.getElementById('about');
+				btn_about.addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'info.html',
+						id: 'info',
+						show: {
+							autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+							aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true  
+						}
+					})
 				});
+
+				var btn_account = document.getElementById('account-and-security');
+				btn_account.addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'account_safety.html',
+						id: 'account_safety',
+						show: {
+							autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+							aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true  
+						}
+					})
+				});
+				//客服电话
+				//				document.getElementById("tel").addEventListener('tap', function() {
+				//					plus.device.dial("502-2590936");
+				//				});
+
 				//退出操作******************
 				document.getElementById('exit').addEventListener('tap', function() {
 					if(mui.os.ios) {
@@ -167,20 +204,6 @@
 					});
 				});
 
-				//返回键提示退出
-				var backButtonPress = 0;
-				mui.back = function(event) {
-					backButtonPress++;
-					if(backButtonPress > 1) {
-						plus.runtime.quit();
-					} else {
-						plus.nativeUI.toast('Once again exit');
-					}
-					setTimeout(function() {
-						backButtonPress = 0;
-					}, 1000);
-					return false;
-				};
 			});
 		</script>
 	</body>

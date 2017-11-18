@@ -6,55 +6,487 @@
 		<title></title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
 		<style>
 			.group_head {
 				margin-left: 15px;
 				margin-right: 15px;
-				margin-top: 18px;
+				margin-top: 16px;
 				margin-bottom: 4px;
 				color: #999999;
 				font-size: 16px;
 			}
-			.item-txt{
-				color:#999999;
+			
+			.item-txt {
+				color: #999999;
+				width: 68%;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				text-align: right;
+			}
+			
+			.setting-btn {
+				font-size: 20px;
+				width: 48px;
+				text-align: right;
+			}
+			
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.mui-views,
+			.mui-view,
+			.mui-pages,
+			.mui-page,
+			.mui-page-content {
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				width: 100%;
+				height: 100%;
+				background-color: #efeff4;
+			}
+			
+			.mui-pages {
+				top: 46px;
+				height: auto;
+			}
+			
+			.mui-scroll-wrapper,
+			.mui-scroll {
+				background-color: #efeff4;
+			}
+			
+			.mui-page.mui-transitioning {
+				-webkit-transition: -webkit-transform 300ms ease;
+				transition: transform 300ms ease;
+			}
+			
+			.mui-page-left {
+				-webkit-transform: translate3d(0, 0, 0);
+				transform: translate3d(0, 0, 0);
+			}
+			
+			.mui-ios .mui-page-left {
+				-webkit-transform: translate3d(-20%, 0, 0);
+				transform: translate3d(-20%, 0, 0);
+			}
+			
+			.mui-navbar {
+				position: fixed;
+				right: 0;
+				left: 0;
+				z-index: 10;
+				height: 44px;
+				background-color: #f7f7f8;
+			}
+			
+			.mui-navbar .mui-bar {
+				position: absolute;
+				background: transparent;
+				text-align: center;
+			}
+			
+			.mui-android .mui-navbar-inner.mui-navbar-left {
+				opacity: 0;
+			}
+			
+			.mui-ios .mui-navbar-left .mui-left,
+			.mui-ios .mui-navbar-left .mui-center,
+			.mui-ios .mui-navbar-left .mui-right {
+				opacity: 0;
+			}
+			
+			.mui-navbar .mui-btn-nav {
+				-webkit-transition: none;
+				transition: none;
+				-webkit-transition-duration: .0s;
+				transition-duration: .0s;
+			}
+			
+			.mui-navbar .mui-bar .mui-title {
+				display: inline-block;
+				width: auto;
+			}
+			
+			.mui-page-shadow {
+				position: absolute;
+				right: 100%;
+				top: 0;
+				width: 16px;
+				height: 100%;
+				z-index: -1;
+				content: '';
+			}
+			
+			.mui-page-shadow {
+				background: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);
+				background: linear-gradient(to right, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);
+			}
+			
+			.mui-navbar-inner.mui-transitioning,
+			.mui-navbar-inner .mui-transitioning {
+				-webkit-transition: opacity 300ms ease, -webkit-transform 300ms ease;
+				transition: opacity 300ms ease, transform 300ms ease;
+			}
+			
+			.mui-page {
+				display: none;
+			}
+			
+			.mui-pages .mui-page {
+				display: block;
+			}
+			
+			.mui-page .mui-table-view:first-child {
+				margin-top: 15px;
+			}
+			
+			.mui-page .mui-table-view:last-child {
+				margin-bottom: 30px;
+			}
+			/*.mui-table-view {
+				margin-top: 20px;
+			}*/
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.mui-table-view-divider {
+				background-color: #efeff4;
+				font-size: 14px;
+			}
+			
+			.mui-table-view-divider:before,
+			.mui-table-view-divider:after {
+				height: 0;
+			}
+			
+			.head {
+				height: 40px;
+			}
+			
+			#head {
+				line-height: 40px;
+			}
+			
+			.head-img {
+				width: 40px;
+				height: 40px;
+			}
+			
+			#head-img1 {
+				position: absolute;
+				bottom: 10px;
+				right: 40px;
+				width: 40px;
+				height: 40px;
+			}
+			
+			.update {
+				font-style: normal;
+				color: #999999;
+				margin-right: -25px;
+				font-size: 15px
+			}
+			
+			.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			
+			.mui-ios .mui-navbar .mui-bar .mui-title {
+				position: static;
 			}
 		</style>
 	</head>
 
-	<body>
-		<header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">Acount And Safety</h1>
-		</header>
-		<div class="mui-content">
-			<div class="group_head">Account</div>
-			<ul class="mui-table-view ">
-				<li class="mui-table-view-cell">
-					<a>Email<span class="mui-pull-right item-txt">Hbuilder</span></a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a>Nickname<span class="mui-pull-right item-txt">hbuilder@dcloud.io</span></a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a>Time Zone<span class="mui-pull-right item-txt">Hbuilder</span></a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a>SSN<span class="mui-pull-right item-txt">hbuilder@dcloud.io</span></a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a>Phone Number<span class="mui-pull-right item-txt">hbuilder@dcloud.io</span></a>
-				</li>
-			</ul>
-			<div class="group_head">Safety</div>
-			<ul class="mui-table-view">
-				<li class="mui-table-view-cell">
-					<a>Modify Password</a>
-				</li>
-			</ul>
+	<body class="mui-fullscreen">
+		<!--页面主结构开始-->
+		<div id="app" class="mui-views">
+			<div class="mui-view">
+				<div class="mui-navbar">
+				</div>
+				<div class="mui-pages">
+				</div>
+			</div>
 		</div>
-		<script src="../js/mui.min.js"></script>
-		<script type="text/javascript">
-			mui.init()
+		<!--页面主结构结束-->
+		<!--单页面开始-->
+		<div id="setting" class="mui-page">
+			<!--页面标题栏开始-->
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>
+				</button>
+				<h1 class="mui-center mui-title">Acount And Safety</h1>
+			</div>
+			<!--页面标题栏结束-->
+			<!--页面主内容区开始-->
+			<div class="mui-page-content">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="group_head">Account
+							<a href="#updateacount"><span class="mui-pull-right mui-icon mui-icon-gear setting-btn"></span></a>
+						</div>
+						<ul class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<a>Email<span class="mui-pull-right item-txt" id="view-email"> </span></a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>Nickname<span class="mui-pull-right item-txt" id="view-nickname"></span></a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>Time Zone<span class="mui-pull-right item-txt" id="view-timezone"></span></a>
+							</li>
+							<li class="mui-table-view-cell">
+								<a>Phone Number<span class="mui-pull-right item-txt" id="view-phonenumber"></span></a>
+							</li>
+						</ul>
+						<div class="group_head">Safety</div>
+						<ul class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<a class="mui-navigate-right" href="#setpassword">Modify Password</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!--页面主内容区结束-->
+		</div>
+		<!--单页面结束-->
+		<div id="setpassword" class="mui-page">
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>
+				</button>
+				<h1 class="mui-center mui-title">Reset Password</h1>
+			</div>
+			<div class="mui-page-content">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="mui-content-padded" style="margin: 15px 10px;">
+							<h5>Password：</h5>
+							<div class="mui-input-row mui-password">
+								<input id="txt-password" type="password" class="mui-input-password" style="margin-bottom: 6px;">
+							</div>
+							<h5>New Password：</h5>
+							<div class="mui-input-row mui-password">
+								<input id="txt-newpassword" type="password" class="mui-input-password" style="margin-bottom: 6px;">
+							</div>
+							<h5>Comfirm Password：</h5>
+							<div class="mui-input-row mui-password">
+								<input id="txt-comfirmpassword" type="password" class="mui-input-password" style="margin-bottom: 6px;">
+							</div>
+							<button id="btn-reset-password" type="button " class="mui-btn mui-btn-block mui-btn-primary " style="padding: 8px;margin-top: 30px; ">Submit</button>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="updateacount" class="mui-page">
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>
+				</button>
+				<h1 class="mui-center mui-title">Acount</h1>
+			</div>
+			<div class="mui-page-content">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="mui-content-padded" style="margin: 15px 10px;">
+							<h5>Email：</h5>
+							<div class="mui-input-row">
+								<input type="text" id="txt-email" disabled="disabled" style="background: #C7C7CC;margin-bottom: 6px;">
+							</div>
+							<h5>Nickname：</h5>
+							<div class="mui-input-row">
+								<input type="text" id="txt-nickname" maxlength="128" style="margin-bottom: 6px;">
+							</div>
+							<h5>Time Zone：</h5>
+							<button id="txt-timezone" data-timezone="0" class="mui-btn mui-btn-block" type='button' style="padding: 10px;font-size: 17px;margin-bottom: 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Choose TimeZone...</button>
+							<h5>Phone Number：</h5>
+							<div class="mui-input-row">
+								<input type="text" id="txt-phonenumber" max="18">
+							</div>
+							<button id="btn-acount" type="button" class="mui-btn mui-btn-block mui-btn-primary " style="padding: 8px;margin-top: 36px; ">Submit</button>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../js/mui.min.js "></script>
+		<script src="../js/mui.picker.min.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/mui.view.js "></script>
+		<script src="../js/md5.min.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript ">
+			(function($) {
+				mui.init();
+				//初始化单页view
+				var viewApi = mui('#app').view({
+					defaultPage: '#setting'
+				});
+				//初始化单页的区域滚动
+				mui('.mui-scroll-wrapper').scroll();
+				var view = viewApi.view;
+				//处理view的后退与webview后退
+				var oldBack = $.back;
+				mui.back = function() {
+					if(viewApi.canBack()) { //如果view可以后退，则执行view的后退
+						viewApi.back();
+					} else { //执行webview后退
+						oldBack();
+					}
+				};
+				mui.plusReady(function() {
+					var tzPicker = new mui.PopPicker();
+					var timezone_key = '0';
+					var timezone_text = 'Choose TimeZone...';
+					var state = JSON.parse(localStorage.getItem('$state'));
+					var userId = state.userId;
+					mui.ajax({
+						url: ServeURL('UserInfo'),
+						headers: Authorize(),
+						data: {
+							userId: userId
+						},
+						type: "GET",
+						dataType: "json",
+						success: function(data) {
+							document.getElementById('view-email').innerText = data.txtValue.Email;
+							document.getElementById('view-nickname').innerText = data.txtValue.Nickname;
+							document.getElementById('view-timezone').innerText = data.txtValue.TimeZoneDsc;
+							document.getElementById('view-phonenumber').innerText = data.txtValue.Phone;
+
+							document.getElementById('txt-email').value = data.txtValue.Email;
+							document.getElementById('txt-nickname').value = data.txtValue.Nickname;
+							document.getElementById('txt-timezone').innerText = data.txtValue.TimeZoneDsc;
+							document.getElementById('txt-phonenumber').value = data.txtValue.Phone;
+							document.getElementById('txt-timezone').setAttribute("data-timezone", data.txtValue.TimeZoneCode);
+							timezone_key = data.txtValue.TimeZoneCode;
+							timezone_text = data.txtValue.TimeZoneDsc;
+							tzPicker.setData(data.tzList);
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							if(XMLHttpRequest.status == 403) {
+								app.setState({});
+								plus.webview.getLaunchWebview().show("pop-in");
+							} else {
+								mui.toast(textStatus);
+							}
+						}
+					});
+					var showTimeZonePickerButton = document.getElementById('txt-timezone');
+					showTimeZonePickerButton.addEventListener('tap', function(event) {
+						tzPicker.show(function(items) {
+							var choose_json = items[0];
+							timezone_key = choose_json['value'];
+							timezone_text = choose_json['text'];
+							showTimeZonePickerButton.innerText = timezone_text;
+							showTimeZonePickerButton.setAttribute("data-timezone", timezone_key);
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+						});
+					}, false);
+
+					var acountSaveButton = document.getElementById('btn-acount');
+					acountSaveButton.addEventListener('tap', function(event) {
+						var nickname = document.getElementById("txt-nickname").value;
+						var phonenumber = document.getElementById("txt-phonenumber").value;
+						par = {
+							userId: userId,
+							nickname: nickname,
+							timezone: timezone_key,
+							phonenumber: phonenumber
+						}
+						mui.ajax({
+							url: ServeURL('UpdateAcount'),
+							headers: Authorize(),
+							data: par,
+							type: "GET",
+							dataType: "json",
+							success: function(data) {
+								if(data.status == 'success') {
+									document.getElementById('view-nickname').innerText = nickname;
+									document.getElementById('view-timezone').innerText = timezone_text;
+									document.getElementById('view-phonenumber').innerText = phonenumber;
+									mui.back();
+									mui.toast("Save Successful");
+								} else {
+									mui.toast(data.message);
+								}
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								if(XMLHttpRequest.status == 403) {
+									app.setState({});
+									plus.webview.getLaunchWebview().show("pop-in");
+								} else {
+									mui.toast(textStatus);
+								}
+							}
+						});
+					});
+
+					var passwordSaveButton = document.getElementById('btn-reset-password');
+					passwordSaveButton.addEventListener('tap', function(event) {
+						var txtpassword = document.getElementById("txt-password").value;
+						var txtnewpassword = document.getElementById("txt-newpassword").value;
+						var txtcomfirmpassword = document.getElementById("txt-comfirmpassword").value;
+						if(txtnewpassword != txtcomfirmpassword) {
+							mui.alert('Please enter the same password as above!', 'Warning', 'Ok');
+							return;
+						};
+						var reg = /^(?=.*?[A-Za-z]+)(?=.*?[0-9]+)(?=.*?[A-Z]).*$/;
+						if(!reg.test(txtnewpassword)) {
+							mui.alert('The password must contain numeric characters and English letters!', 'Warning', 'Ok');
+							return;
+						};
+						mui.ajax({
+							url: ServeURL('UpdatePassword'),
+							headers: Authorize(),
+							data: {
+								userId: userId,
+								txtpassword: txtpassword,
+								txtnewpassword: txtnewpassword
+							},
+							type: "GET",
+							dataType: "json",
+							success: function(data) {
+								if(data.status == 'success') {
+									mui.toast("The user password has been modified, please login again.");
+									localStorage.clear();
+									plus.runtime.restart();
+								} else {
+									mui.toast(data.message);
+								}
+							},
+							error: function(XMLHttpRequest, textStatus, errorThrown) {
+								if(XMLHttpRequest.status == 403) {
+									app.setState({});
+									plus.webview.getLaunchWebview().show("pop-in");
+								} else {
+									mui.toast(textStatus);
+								}
+							}
+						});
+					})
+				});
+			})(mui);
 		</script>
 	</body>
 

@@ -89,13 +89,14 @@
 						callback: pullupRefresh
 					}
 				}
-			});
+			}); 
 
 			var count = -1;
 			var userId = "";
 			mui.plusReady(function() {
 
-				userId = plus.storage.getItem("userid");
+				var state = JSON.parse(localStorage.getItem('$state'));
+				userId = state.userId;
 
 				var scrollToTopBox = document.getElementById('scrollToTop');
 				scrollToTopBox.addEventListener('tap', function(e) {
@@ -160,21 +161,6 @@
 						}
 					})
 				});
-
-				//返回键提示退出
-				var backButtonPress = 0;
-				mui.back = function(event) {
-					backButtonPress++;
-					if(backButtonPress > 1) {
-						plus.runtime.quit();
-					} else {
-						plus.nativeUI.toast('Once again exit');
-					}
-					setTimeout(function() {
-						backButtonPress = 0;
-					}, 1000);
-					return false;
-				};
 
 			});
 
@@ -311,6 +297,7 @@
 						} else {
 							mui.toast(textStatus);
 						}
+						mui.toast(XMLHttpRequest.status);
 					}
 				});
 				mui('#pullrefresh').pullRefresh().endPulldown();

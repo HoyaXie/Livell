@@ -25,13 +25,17 @@ function Authorize() {
 	var token = state.token;
 	var timestamp = LocalToUtc(new Date());
 	var nonce = parseInt(1000 * Math.random());
-	token = md5(token + timestamp + nonce );
+	token = md5(token + timestamp + nonce);
 	var par = {
-		token : token,
-		timestamp : timestamp,
-		nonce : nonce
+		token: token,
+		timestamp: timestamp,
+		nonce: nonce
 	};
 	return par;
+};
+//补0
+function PrefixInteger(num, length) { 
+	return(Array(length).join('0') + num).slice(-length);
 };
 
 (function($, document) {

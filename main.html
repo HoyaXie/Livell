@@ -44,9 +44,98 @@
 
 			var aniShow = {};
 
+			var aniShow = "pop-in";
+			var menu = null,
+				showMenu = false;
+			var isInTransition = false;
+			var _self;
+			//只有ios支持的功能需要在Android平台隐藏；
+			if(mui.os.android) {
+				var list = document.querySelectorAll('.ios-only');
+				if(list) {
+					for(var i = 0; i < list.length; i++) {
+						list[i].style.display = 'none';
+					}
+				}
+				//Android平台暂时使用slide-in-right动画
+				if(parseFloat(mui.os.version) < 4.4) {
+					aniShow = "slide-in-right";
+				}
+			}
+			//初始化，并预加载webview模式的选项卡			
+			function preload() {
+
+				var menu_style = {
+					left: "-70%",
+					width: '70%',
+					popGesture: "none",
+					render: "always"
+				};
+
+				if(mui.os.ios) {
+					menu_style.zindex = -1;
+				}
+
+				//处理侧滑导航，为了避免和子页面初始化等竞争资源，延迟加载侧滑页面；
+				menu = mui.openWindow({
+					id: 'index-menu',
+					url: 'index-menu.html',
+					styles: menu_style,
+					show: {
+						aniShow: 'none'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}
 			//创建子页面，首个选项卡页面显示，其它均隐藏；
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
+
+				setTimeout(function() {
+					//预加载
+					preload();
+				}, 200);
+				//启用侧滑拖拽操作，延时的原因是menu页是延时创建的，所以这里需要相应延时
+				setTimeout(function() {
+					self.drag({
+						direction: "right",
+						moveMode: "followFinger"
+					}, {
+						view: menu,
+						moveMode: "follow"
+					}, function(e) {
+						//console.log(JSON.stringify(e));
+					});
+				}, 350);
+
+				/**
+				 * 关闭菜单
+				 */
+				function closeMenu() {
+					plus.webview.startAnimation({
+							'view': self,
+							'styles': {
+								'fromLeft': '70%',
+								'toLeft': "0"
+							},
+							'action': 'show'
+						}, {
+							'view': menu,
+							'styles': {
+								'fromLeft': "0",
+								'toLeft': '-70%'
+							},
+							'action': 'show'
+						},
+						function(e) {
+							console.log(JSON.stringify(e));
+							if(e.id == self.id) {}
+						}.bind(this)
+					)
+				};
+
 				for(var i = 0; i < 3; i++) {
 					var temp = {};
 					var sub = plus.webview.create(subpages[i], subpages[i], subpage_style);
@@ -99,20 +188,21 @@
 					}
 				});
 
-				//返回键提示退出
-				var backButtonPress = 0;
-				mui.back = function(event) {
-					backButtonPress++;
-					if(backButtonPress > 1) {
-						plus.runtime.quit();
-					} else {
-						plus.nativeUI.toast('Once again exit');
+				var _toast = false;
+				mui.back = function() {
+					if(parseInt(self.getStyle().left) > 0) {
+						closeMenu();
+						return;
 					}
-					setTimeout(function() {
-						backButtonPress = 0;
-					}, 1000);
-					return false;
-				};
+
+					if(!_toast || !_toast.isVisible()) {
+						_toast = mui.toast('Once again exit !', {
+							duration: 'long'
+						});
+					} else {
+						plus.runtime.quit();
+					}
+				}
 			});
 		</script>
 	</body>
