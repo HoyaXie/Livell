@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Report Card</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<style>
+			.card-description-totaltime {
+				padding: 6px 15px;
+				font-size: 20px;
+				color: #007aff;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">Report Card</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-card">
+				<div class="mui-card-header mui-card-media" id="monthly-time-sheet" style="height:50vw;"></div>
+				<div class="mui-card-content">
+					<div class="mui-card-content-inner">
+						<div class="card-description">
+							<div class="card-description-item" style="float:left;height:62px; width:50%;">
+								<span>Total Time: (minute)</span>
+								<div class="card-description-totaltime" id="yearTotal">0.00</div>
+							</div>
+							<div class="card-description-item" style="float:left;height:62px; width:50%;padding-left: 12px;">
+								<span>This Monthly: (minute)</span>
+								<div class="card-description-totaltime" id="monthlyTotal">0.00</div>
+							</div>
+							<div style="position:absolute;z-index:1;width:1px;background:#CCCCCC;height:45px;left:50%;margin-top: 2px;" align="center"></div>
+						</div>
+					</div>
+				</div>
+				<div class="mui-card-footer">
+					<span>2017/11/20 16:30</span>
+					<a class="mui-card-link">Details</a>
+				</div>
+			</div>
+
+			<div class="mui-card">
+				<div class="mui-card-content">
+					<div class="mui-card-content-inner">
+						<div id="job-time-sheet" style="height:70vw;"></div>
+					</div>
+				</div>
+				<div class="mui-card-footer">
+					<span>2017/11/20 16:30</span>
+					<a class="mui-card-link">Details</a>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/echarts.common.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/md5.min.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+				var state = JSON.parse(localStorage.getItem('$state'));
+				var userId = state.userId;
+
+				var _year = (new Date()).getFullYear();
+				var monthlyTimeChart = echarts.init(document.getElementById('monthly-time-sheet'));
+				var jobTimeChart = echarts.init(document.getElementById('job-time-sheet'));
+
+				monthlyTimeChart.setOption({
+					title: {
+						text: 'Monthly Time (' + _year + ')',
+						textStyle: {　　　　
+							fontSize: 18
+						}
+					},
+					grid: {
+						x: 25,
+						y: 45,
+						x2: 5,
+						y2: 20,
+						borderWidth: 1
+					},
+					tooltip: {
+						trigger: 'axis',
+						confine: true,
+						formatter: "{a} Time<br/> {b}: {c} (minute)"
+					},
+					xAxis: {
+						data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'july', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [{
+						name: 'Total',
+						type: 'bar',
+						data: []
+					}]
+				});
+
+				jobTimeChart.setOption({
+					title: {
+						text: 'Time Distribution (' + _year + ')',
+						textStyle: {　　　　
+							fontSize: 18
+						}
+					},
+					tooltip: {
+						trigger: 'item',
+						confine: true,
+						formatter: "{a} <br/>{b} : {c} minute ({d}%)"
+					},
+					legend: {
+						orient: 'vertical',
+						bottom: 'bottom',
+						data: ['RegulaTime', 'OverTime', 'DoubleTime']
+					},
+					series: [{
+						name: 'Job Time',
+						type: 'pie',
+						radius: '65%',
+						center: ['50%', '50%'],
+						data: []
+					}]
+				});
+
+				mui.ajax({
+					url: ServeURL('ReportCardInit'), //跨域URL 
+					headers: Authorize(state.token),
+					data: {
+						userId: userId,
+						year:_year
+					},
+					type: "GET",
+					dataType: "json",  
+					success: function(data) {
+						document.getElementById('yearTotal').innerText = data.yearTotal;
+						document.getElementById('monthlyTotal').innerText = data.monthlyTotal;
+						monthlyTimeChart.setOption({
+							series: [{
+								name: 'Total',
+								type: 'bar',
+								data: data.monthlyTimeData
+							}]
+						});
+
+						jobTimeChart.setOption({
+							series: [{
+								name: 'Job Time',
+								type: 'pie',
+								radius: '65%',
+								center: ['50%', '50%'],
+								data: data.jobTimeDate
+							}]
+						});
+
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
+					}
+				});
+
+			})
+		</script>
+	</body>
+
+</html>

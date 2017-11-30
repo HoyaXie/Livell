@@ -1,0 +1,39 @@
+			.time-status {
+				max-width: initial;
+				width: 60px;
+				height: 36px;
+				padding-top: 5px;
+			}
+			
+			.time-status>span {
+				padding: 7px;
+			}
+			
+			.meta-info {
+				position: absolute;
+				left: 72px;
+				font-size: 12px;
+				color: #8f8f94;
+				top: 20px;
+				width: 300px;
+			}
+			
+			.meta-body {
+				position: absolute;
+				left: 72px;
+				right: 10px;
+				width: 300px;
+			}
+			
+			.author {
+				font-style: oblique;
+			}
+			
+			.meta-body .total_time {
+				float: right;
+				color: #007AFF;
+			}
+			
+			.meta-info .time {
+				float: right;
+			}

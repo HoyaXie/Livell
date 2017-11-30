@@ -24,7 +24,7 @@
 				height: auto;
 				float: left;
 				display: inline;
-				color: #0062CC;
+				color: #8F8F94;
 				word-wrap: break-word;
 			}
 		</style>
@@ -36,10 +36,10 @@
 			<h1 class="mui-title">Time Information</h1>
 		</header>
 		<div class="mui-content">
+			<div id="allmap" style="width: 100%;height: 200px;">
+				<p class="map-loading-text">Map loading...</p>
+			</div>
 			<ul class="mui-table-view">
-				<li class="mui-table-view-cell">
-					<div id="timeType_chart" style="width: 100%;height:240px;"></div>
-				</li>
 				<li class="mui-table-view-cell">
 					<div class="mui-pull-left information-title">
 						Project:
@@ -96,12 +96,17 @@
 						<span id="txtNote"></span>
 					</div>
 				</li>
+				<li class="mui-table-view-cell">
+					<div id="timeType_chart" style="width: 100%;height:300px;"></div>
+				</li>
 			</ul>
 		</div>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/echarts.common.min.js"></script>
 		<script src="../js/app.js"></script>
+		<script src="../js/md5.min.js"></script>
 		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZMuMMbE7Mkf7ypTLBFiPBCjfy-UoqeY8&sensor=true&libraries=geometry"></script>
 		<script type="text/javascript">
 			mui.init()
 			mui.plusReady(function() {
@@ -114,7 +119,7 @@
 				var timeId = self.timeId;
 				mui.ajax({
 					url: ServeURL('TimeDetail'), //跨域URL
-					headers: Authorize(),
+					headers: Authorize(state.token),
 					data: {
 						userId: userId,
 						timeId: timeId
@@ -132,13 +137,13 @@
 							},
 							tooltip: {
 								trigger: 'item',
+								confine: true,
 								formatter: "{a} <br/>{b} : {c} minute ({d}%)"
 							},
 							series: [{
 								name: 'Time Type',
 								type: 'pie',
 								radius: '55%',
-								roseType: 'angle',
 								data: [{
 										value: data.RegulaWorkTime,
 										name: 'RegulaTime'
@@ -157,6 +162,34 @@
 
 						// 使用刚指定的配置项和数据显示图表。
 						myChart.setOption(option);
+
+						//地图位置
+						if(data.Latitude == 0 && data.Longitude == 0) {
+							document.getElementById('allmap').style.display = "none";
+						} else {
+							var LatLng = new google.maps.LatLng(data.Latitude, data.Longitude);
+							var mapOptions = {
+								center: LatLng,
+								zoom: 13,
+								streetViewControl: false,
+								fullscreenControl: false,
+								mapTypeControl: false,
+								mapTypeId: google.maps.MapTypeId.ROADMAP
+							};
+							map = new google.maps.Map(document.getElementById("allmap"), mapOptions);
+							//当前用户定位
+							userMarker = new google.maps.Marker({
+								map: map,
+								position: LatLng
+							});
+							InfoWindow = new google.maps.InfoWindow({
+								content: "Current Location：<br/>latitude：" + data.Latitude + "<br/>longitude：" + data.Longitude //提示窗体内的提示信息
+							});
+							InfoWindow.open(map, userMarker);
+							google.maps.event.addListener(userMarker, "click", function() {
+								InfoWindow.open(map);
+							});
+						}
 
 						document.getElementById('txtProject').innerText = data.txtProject;
 						document.getElementById('txtEmployee').innerText = data.txtEmployee;

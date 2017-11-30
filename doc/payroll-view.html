@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Payroll</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<style>
+			.mui-content {
+				margin-top: -1px;
+			}
+			
+			.mui-media-amount {
+				line-height: 32px;
+				height: 32px;
+				font-size: 22px;
+				color: #CF2D28;
+			}
+			
+			.p {
+				font-size: 12px;
+			}
+			
+			.group_head {
+				margin-left: 15px;
+				margin-right: 15px;
+				margin-top: 16px;
+				margin-bottom: 4px;
+				color: #999999;
+			}
+			
+			.mui-media-item {
+				line-height: 32px;
+				height: 32px;
+			}
+			
+			.payroll-bar {
+				height: 150px;
+				background-color: #6E587A;
+			}
+			
+			.payroll-bar-content {
+				padding: 58px 15px 18px;
+				color: #FFFFFF;
+				height: 100%;
+				font-size: 14px;
+			}
+			
+			.total-pay {
+				font-size: 48px;
+				height: 48px;
+				line-height: 48px;
+				margin-bottom: 6px;
+			}
+			
+			.payroll-info-item{
+				line-height: 18px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-transparent" id="scrollToTop">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">Payroll Information</h1>
+		</header>
+		<div class="mui-content">
+			<div class="payroll-bar">
+				<div class="payroll-bar-content">
+
+					<div class="mui-pull-right">
+						<div class="total-pay" id="txttotal">0.00</div>
+						<div class="mui-pull-right" id="dtpPayrollDate"></div>
+					</div>
+					<div class="payroll-info">
+						<div class="payroll-info-item">NO:  <span id="txtno">1001</span></div>
+						<div class="payroll-info-item">Pay Start:  <span id="dtpStartDate">2017/10/01</span></div>
+						<div class="payroll-info-item">Pay End:  <span id="dtpEndDate">2017/11/01</span> </div>
+						<div class="payroll-info-item">Period:  <span id="txtPayperiodDesc">Weekly</span></div>			
+					</div>
+				</div>
+
+			</div>
+
+			<div class="group_head">
+				Incomes
+			</div>
+			<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-incomes">
+				<!--<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$200,00.00</div>
+					<div class="mui-media-body">
+						Regular Hourly Pay
+						<p class='mui-ellipsis'>Rate:1.21($) &nbsp; Hours:14.75</p>
+					</div>
+				</li>-->
+			</ul>
+
+			<div class="group_head">
+				Deductions
+			</div>
+			<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-deductions">
+
+			</ul>
+
+			<div class="group_head">
+				Taxes
+			</div>
+			<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-deductions">
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtIncomeTax">0.00</span></div>
+					<div class="mui-media-item">
+						Federal Tax
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtSStax">0.00</span></div>
+					<div class="mui-media-item">
+						Employee Social Security
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtMedicareTax">0.00</span></div>
+					<div class="mui-media-item">
+						Employee Medicare
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtStateIncomeTax">0.00</span></div>
+					<div class="mui-media-item">
+						State Tax
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtLocalTax">0.00</span></div>
+					<div class="mui-media-item">
+						Local Tax
+					</div>
+				</li>
+			</ul>
+
+			<div class="group_head">
+				Employer Tax
+			</div>
+			<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-deductions">
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtEmployerSocialSecurity">0.00</span></div>
+					<div class="mui-media-item">
+						Employer Social Security
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtEmployerMedicare">0.00</span></div>
+					<div class="mui-media-item">
+						Employer Medicare
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtEmployerFedUnemployment">0.00</span></div>
+					<div class="mui-media-item">
+						Employer Fed Unemployment
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtEmployerStateUnemployment">0.00</span></div>
+					<div class="mui-media-item">
+						Employer State Unemployment
+					</div>
+				</li>
+			</ul>
+
+			<div class="group_head">
+				Summary
+			</div>
+			<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-deductions">
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtTotalIncome">0.00</span></div>
+					<div class="mui-media-item">
+						Gross Income
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="lbTotalTaxableIncome">0.00</span></div>
+					<div class="mui-media-item">
+						Taxable Income
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="lbFICATaxableIncome">0.00</span></div>
+					<div class="mui-media-item">
+						FICA Taxable Income
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtTotalTax">0.00</span></div>
+					<div class="mui-media-item">
+						Total Employee Tax
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="lbTotalEmployerTax">0.00</span></div>
+					<div class="mui-media-item">
+						Total Employer Tax
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="txtTotalDeduction">0.00</span></div>
+					<div class="mui-media-item">
+						Total Deduction
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-amount mui-pull-right">$<span id="lbNetPay">0.00</span></div>
+					<div class="mui-media-item">
+						Net Pay
+					</div>
+				</li>
+			</ul>
+
+			<div class="group_head">
+				Memo
+			</div>
+			<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-deductions">
+				<li class="mui-table-view-cell mui-media">
+					<span id="txtMemo"></span>
+				</li>
+			</ul>
+
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/md5.min.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+				var state = JSON.parse(localStorage.getItem('$state'));
+				var userId = state.userId;
+				var token = state.token;
+				var self = plus.webview.currentWebview();
+				var PId = self.PId;
+				var txtNo = self.txtNo;
+				var txtTotal = self.txtTotal;
+				document.getElementById('txtno').innerText=txtNo;
+				document.getElementById('txttotal').innerText=txtTotal;
+
+				mui.ajax({
+					url: ServeURL('PayInfo'), //跨域URL 
+					headers: Authorize(token),
+					data: {
+						Id: PId
+					},
+					type: "GET",
+					dataType: "json",
+					timeout: 5000, //超时时间设置为5秒；
+					success: function(data) {
+						//Incomes 
+						for(var o in data.IncomesData) {
+							var html = '<div class="mui-media-amount mui-pull-right">$' + data.IncomesData[o].V3 + '</div>' +
+								'<div class="mui-media-body">' + data.IncomesData[o].Text +
+								'<p class="mui-ellipsis">Rate:' + data.IncomesData[o].V1 + '($) &nbsp; Hours:' + data.IncomesData[o].V2 + '</p>' +
+								'</div>';
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell mui-media';
+							li.innerHTML = html;
+							document.getElementById('view-incomes').appendChild(li);
+						};
+						//Deductions 
+						for(var o in data.DeductionsData) {
+							var html = '<div class="mui-media-amount mui-pull-right">$' + data.DeductionsData[o].V3 + '</div>' +
+								'<div class="mui-media-body">' + data.DeductionsData[o].Text +
+								'<p class="mui-ellipsis">Input:' + data.DeductionsData[o].V1 + ' &nbsp; Limits:' + data.DeductionsData[o].V2 + '</p>' +
+								'</div>';
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell mui-media';
+							li.innerHTML = html;
+							document.getElementById('view-deductions').appendChild(li);
+						};
+						//other
+						for(var key in data.TaxesSummary) {
+							var ele = document.getElementById(key);
+							if(ele != null) {
+								ele.innerText = data.TaxesSummary[key];
+							}
+						};
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
+						mui.toast(XMLHttpRequest.status);
+					}
+				});
+			})
+		</script>
+	</body>
+
+</html>

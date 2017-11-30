@@ -109,5 +109,60 @@
 		"refer": [
 			"doc/time_detail.html"
 		]
+	},
+	"index-menu.html": {
+		"refer": [
+			"doc/timesheets.html",
+			"doc/audit.html",
+			"doc/account_safety.html",
+			"doc/info.html",
+			"doc/payroll-list.html",
+			"doc/report-card.html"
+		]
+	},
+	"doc/timesheets.html": {
+		"refer": [
+			"doc/time_detail.html",
+			"doc/audit.html",
+			"doc/info.html",
+			"doc/timesheet-pending.html",
+			"doc/timesheet-lock.html",
+			"doc/timesheet-all.html"
+		],
+		"resources": [
+			"doc/audit.html",
+			"doc/timesheet-pending.html"
+		]
+	},
+	"doc/audit.html": {
+		"refer": [
+			"doc/time_detail.html"
+		]
+	},
+	"doc/info.html": {
+		"refer": [
+			"index-menu.html"
+		]
+	},
+	"doc/timesheet-pending.html": {
+		"refer": [
+			"doc/time_detail.html"
+		]
+	},
+	"doc/timesheet-all.html": {
+		"refer": [
+			"doc/time_detail.html"
+		]
+	},
+	"doc/timesheet-lock.html": {
+		"refer": [
+			"doc/time_detail.html"
+		]
+	},
+	"doc/payroll-list.html": {
+		"refer": [
+			"doc/time_detail.html",
+			"doc/payroll-view.html"
+		]
 	}
 }

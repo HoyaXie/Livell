@@ -11,7 +11,7 @@
 		<link href="css/icons-extra.css" rel="stylesheet" />
 	</head>
 
-	<body>
+	<body id='mainBody'>
 		<!--<header class="mui-bar mui-bar-nav">
 			<a class="mui-icon mui-icon-bars mui-pull-left menua"></a>
 			<a class="mui-icon mui-icon-plus mui-pull-right adda"></a>
@@ -96,7 +96,7 @@
 				setTimeout(function() {
 					//预加载
 					preload();
-				}, 200);
+				}, 300);
 				//启用侧滑拖拽操作，延时的原因是menu页是延时创建的，所以这里需要相应延时
 				setTimeout(function() {
 					self.drag({
@@ -109,6 +109,13 @@
 						//console.log(JSON.stringify(e));
 					});
 				}, 350);
+
+				document.getElementById('mainBody').addEventListener('tap', function() {
+					var _left = parseInt(self.getStyle().left);
+					if(_left > 10) {
+						closeMenu();
+					}
+				});
 
 				/**
 				 * 关闭菜单

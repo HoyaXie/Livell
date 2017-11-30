@@ -89,14 +89,16 @@
 						callback: pullupRefresh
 					}
 				}
-			}); 
+			});
 
 			var count = -1;
 			var userId = "";
+			var token = "";
 			mui.plusReady(function() {
 
 				var state = JSON.parse(localStorage.getItem('$state'));
 				userId = state.userId;
+				token = state.token;
 
 				var scrollToTopBox = document.getElementById('scrollToTop');
 				scrollToTopBox.addEventListener('tap', function(e) {
@@ -111,7 +113,7 @@
 					mui.confirm('Are you sure to delete the record ？', 'Confirmation', ['Yes', 'No'], function(e) {
 						mui.ajax({
 							url: ServeURL('DeleteTime'), //跨域URL
-							headers: Authorize(),
+							headers: Authorize(token),
 							data: {
 								userId: userId,
 								timeId: Id
@@ -169,8 +171,8 @@
 				var cells = document.body.querySelectorAll('.mui-table-view-cell');
 				var newCount = cells.length > 0 ? 5 : 20; //首次加载20条，满屏 
 				mui.ajax({
-					url: ServeURL('GetTimes'), //跨域URL  
-					headers: Authorize(),
+					url: ServeURL('MyTimes'), //跨域URL  
+					headers: Authorize(token),
 					async: false,
 					data: {
 						cells: cells.length,
@@ -219,7 +221,7 @@
 					'</div>' +
 					'<div class="meta-body">' +
 					'<span class="jobName">' + _time.JobName + '</span>' +
-					'<span class="total_time">' + _time.TotalWorkTime + ' minute</span>' +
+					'<span class="total_time">' + _time.TotalWorkTime + ' (m)</span>' +
 					'</div>' +
 					'<div class="meta-info">' +
 					'<span class="author">' + _time.EmployeeName + '</span>' +
@@ -229,41 +231,6 @@
 				return html;
 			}
 
-			function addData() {
-				var table = document.body.querySelector('.mui-table-view');
-				var cells = document.body.querySelectorAll('.mui-table-view-cell');
-				mui.ajax({
-					url: ServeURL('GetTimes'), //跨域URL
-					headers: Authorize(),
-					data: {
-						cells: cells.length,
-						newCount: cells.length + 5,
-						userId: userId
-					},
-					type: "GET",
-					dataType: "json",
-					timeout: 5000, //超时时间设置为5秒；
-					success: function(data) {
-						data.forEach(function(row, index) {
-							console.log(row.StartDate);
-							var li = document.createElement('li');
-							li.className = 'mui-table-view-cell';
-							li.innerHTML = ItemHtml(row);
-							//下拉刷新，新纪录插到最前面；
-							table.insertBefore(li, table.firstChild);
-						});
-						mui.toast("Load " + data.length + " records");
-					},
-					error: function(XMLHttpRequest, textStatus, errorThrown) {
-						if(XMLHttpRequest.status == 403) {
-							app.setState({});
-							plus.webview.getLaunchWebview().show("pop-in");
-						} else {
-							mui.toast(textStatus);
-						}
-					}
-				});
-			}
 			/**
 			 * 下拉刷新具体业务实现
 			 */
@@ -271,8 +238,8 @@
 				var table = document.body.querySelector('.mui-table-view');
 				var cells = document.body.querySelectorAll('.mui-table-view-cell');
 				mui.ajax({
-					url: ServeURL('GetTimes'), //跨域URL 
-					headers: Authorize(),
+					url: ServeURL('MyTimes'), //跨域URL 
+					headers: Authorize(token),
 					data: {
 						cells: 0,
 						newCount: 20,

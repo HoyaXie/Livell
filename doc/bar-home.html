@@ -73,9 +73,9 @@
 		<script src="../js/mui.picker.min.js"></script>
 		<script src="../js/mui.poppicker.js"></script>
 		<script src="../js/app.js"></script>
-		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZMuMMbE7Mkf7ypTLBFiPBCjfy-UoqeY8&sensor=true&libraries=geometry"></script>
 		<script src="../js/md5.min.js"></script>
 		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZMuMMbE7Mkf7ypTLBFiPBCjfy-UoqeY8&sensor=true&libraries=geometry"></script>
 		<script type="text/javascript">
 			function PrefixInteger(num, length) { 
 				return(Array(length).join('0') + num).slice(-length);
@@ -263,7 +263,7 @@
 				showUserPickerButton.addEventListener('tap', function(event) {
 					mui.ajax({
 						url: ServeURL('GetJobBinding'),
-						headers: Authorize(),
+						headers: Authorize(state.token),
 						data: {
 							userId: userId
 						},
@@ -293,7 +293,7 @@
 						//获取Job定位点
 						mui.ajax({
 							url: ServeURL('GetJobLocation'), //跨域URL
-							headers: Authorize(),
+							headers: Authorize(state.token),
 							data: {
 								jobId: key
 							},
@@ -339,7 +339,7 @@
 				if(userId != null) {
 					mui.ajax({
 						url: ServeURL('InitializeTimeCard'), //跨域URL
-						headers: Authorize(),
+						headers: Authorize(state.token),
 						data: {
 							userId: userId
 						},
@@ -414,7 +414,7 @@
 					btn_TimeReset.style.display = "inline";
 					mui.ajax({
 						url: ServeURL('TimeIn'), //跨域URL
-						headers: Authorize(),
+						headers: Authorize(state.token),
 						data: {
 							jobId: ChooseJob,
 							userId: userId,
@@ -442,6 +442,15 @@
 				});
 
 				btn_TimeOut.addEventListener('tap', function(event) {
+					//判断是否在定位点内
+					var LatLng1 = new google.maps.LatLng(latitude, longitude);
+					var LatLng2 = new google.maps.LatLng(joblatitude, joblongitude);
+					var distanceMeter = google.maps.geometry.spherical.computeDistanceBetween(LatLng1, LatLng2);
+					if(jobIsLocation && distanceMeter > 3000) {
+						mui.alert('The current location is not located near the work place (Within 3 kilometers).', 'Warning', 'Ok');
+						return;
+					};
+
 					clearInterval(localStorage.getItem("auto_time"));
 					document.getElementById("txtPayrollTime").innerText = "00:00:00";
 					btn_TimeOut.style.display = "none"
@@ -449,9 +458,11 @@
 					btn_TimeIn.style.display = "inline";
 					mui.ajax({
 						url: ServeURL('TimeOut'), //跨域URL
-						headers: Authorize(),
+						headers: Authorize(state.token),
 						data: {
-							userId: userId
+							userId: userId,
+							latitude:latitude,
+							longitude:longitude
 						},
 						type: "GET",
 						dataType: "json",
@@ -485,7 +496,7 @@
 					btn_TimeIn.style.display = "inline";
 					mui.ajax({
 						url: ServeURL('TimeReset'), //跨域URL
-						headers: Authorize(),
+						headers: Authorize(state.token),
 						data: {
 							userId: userId
 						},

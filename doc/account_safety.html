@@ -361,7 +361,7 @@
 					var userId = state.userId;
 					mui.ajax({
 						url: ServeURL('UserInfo'),
-						headers: Authorize(),
+						headers: Authorize(state.token),
 						data: {
 							userId: userId
 						},
@@ -416,7 +416,7 @@
 						}
 						mui.ajax({
 							url: ServeURL('UpdateAcount'),
-							headers: Authorize(),
+							headers: Authorize(state.token),
 							data: par,
 							type: "GET",
 							dataType: "json",
@@ -458,7 +458,7 @@
 						};
 						mui.ajax({
 							url: ServeURL('UpdatePassword'),
-							headers: Authorize(),
+							headers: Authorize(state.token),
 							data: {
 								userId: userId,
 								txtpassword: txtpassword,

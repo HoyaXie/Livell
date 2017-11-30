@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Payroll</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/livell.style.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-content>.mui-table-view:first-child {
+				margin-top: -1px;
+			}
+			/*.time-status {
+				max-width: initial;
+				width: 60px;
+				height: 36px;
+				padding-top: 5px;
+			}
+			
+			.time-status>span {
+				padding: 7px;
+			}
+			
+			.meta-info {
+				position: absolute;
+				left: 72px;
+				font-size: 12px;
+				color: #8f8f94;
+				top: 20px;
+				width: 300px;
+			}
+			
+			.meta-body {
+				position: absolute;
+				left: 72px;
+				right: 10px;
+				width: 300px;
+			}
+			
+			.author {
+				font-style: oblique;
+			}
+			
+			.meta-body .total_time {
+				float: right;
+				color: #007AFF;
+			}
+			
+			.meta-info .time {
+				float: right;
+			}*/
+			
+			.mui-media-amount {
+				line-height: 42px;
+				height: 42px;
+				font-size: 22px;
+				color: #CF2D28;
+				margin-right: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" id="scrollToTop">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">Time Audit</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll" id="time-list">
+				<!--数据列表-->
+				<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed" id="view-time-list">
+					<!--<li class="mui-table-view-cell mui-media">
+						<a class="mui-navigate-right" href="javascript:;">
+							<div class="mui-media-amount mui-pull-right">$200,00.00</div>
+							<div class="mui-media-body">
+								NO.1001
+								<p class='mui-ellipsis'><span id="fromDate">2017/10/10</span> to <span id="toDate">2017/11/10</span></p>
+							</div>
+						</a>
+					</li>-->
+				</ul>
+			</div>
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/md5.min.js"></script>
+		<script src="../js/LivellPayroll.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						style: 'circle',
+						callback: pulldownRefresh
+					},
+					up: {
+						auto: true,
+						contentrefresh: 'loading...',
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			var count = -1;
+			var userId = "";
+			var token = "";
+			mui.plusReady(function() {
+				var state = JSON.parse(localStorage.getItem('$state'));
+				userId = state.userId;
+				token = state.token;
+
+				var scrollToTopBox = document.getElementById('scrollToTop');
+				scrollToTopBox.addEventListener('tap', function(e) {
+					scrollUp();
+				});
+
+				mui('#view-time-list').on('tap', 'a', function(event) {
+					var elem = this;
+					var Id = elem.getAttribute("data-id");
+					var No = elem.getAttribute("data-no");
+					var Total = elem.getAttribute("data-total");
+					mui.openWindow({
+						url: 'payroll-view.html',
+						id: 'payroll-view', 
+						extras: {
+							PId: Id,
+							txtNo:No,
+							txtTotal:Total
+						},
+						show: {
+							autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+							aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+						},
+						waiting: {
+							autoShow: true, //自动显示等待框，默认为true  
+							title: 'loading...' //等待对话框上显示的提示内容
+						}
+					})
+				});
+			});
+
+			function pullupRefresh() {
+				var table = document.body.querySelector('.mui-table-view');
+				var cells = document.body.querySelectorAll('.mui-table-view-cell');
+				var newCount = cells.length > 0 ? 5 : 20; //首次加载20条，满屏 
+				mui.ajax({
+					url: ServeURL('GetPayList'), //跨域URL  
+					headers: Authorize(token),
+					async: false,
+					data: {
+						cells: cells.length,
+						newCount: newCount,
+						userId: userId
+					},
+					type: "GET",
+					dataType: "json",
+					timeout: 5000, //超时时间设置为5秒；
+					success: function(data) {
+						count = data.length;
+						data.forEach(function(row, index) {
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell mui-media';
+							li.innerHTML = ItemHtml(row);
+							table.appendChild(li);
+						});
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
+					}
+				});
+				mui('#pullrefresh').pullRefresh().endPullup(count == 0); //参数为true代表没有更多数据了。
+
+			};
+
+			function ItemHtml(data) {
+				var html = '<a class="mui-navigate-right" href="javascript:;" data-id="' + data.id + '" data-no="' + data.no + '" data-total="' + data.amount.formatMoney(2, "", ",", ".") +'">' +
+					'<div class="mui-media-amount mui-pull-right">' + data.amount.formatMoney(2, "$", ",", ".") + '</div>' +
+					'<div class="mui-media-body">NO.' + data.no +
+					'<p class="mui-ellipsis">' + ChangeDateFormat(data.fromDate) + ' to ' + ChangeDateFormat(data.toDate) + '</p>' +
+					'</div></a>';
+				return html;
+			}
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				var table = document.body.querySelector('.mui-table-view');
+				var cells = document.body.querySelectorAll('.mui-table-view-cell');
+				mui.ajax({
+					url: ServeURL('GetPayList'), //跨域URL 
+					headers: Authorize(token),
+					data: {
+						cells: 0,
+						newCount: 20,
+						userId: userId
+					},
+					type: "GET",
+					dataType: "json",
+					timeout: 5000, //超时时间设置为5秒；
+					success: function(data) {
+						table.innerHTML = '';
+						data.forEach(function(row, index) {
+							var li = document.createElement('li');
+							li.className = 'mui-table-view-cell mui-media';
+							li.innerHTML = ItemHtml(row);
+							table.appendChild(li);
+						});
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+						if(XMLHttpRequest.status == 403) {
+							app.setState({});
+							plus.webview.getLaunchWebview().show("pop-in");
+						} else {
+							mui.toast(textStatus);
+						}
+						mui.toast(XMLHttpRequest.status);
+					}
+				});
+				mui('#pullrefresh').pullRefresh().endPulldown();
+
+			}
+		</script>
+	</body>
+
+</html>

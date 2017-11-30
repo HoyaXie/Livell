@@ -50,7 +50,7 @@
 		state.userId = _userId;
 		state.timeZone = _timeZone;
 		state.nickName = _nickName;
-		state.token = "livellzxcasdqwe123!@#";
+		state.token = "livellzxcasdqwe123";
 		owner.setState(state);
 		return callback();
 	};

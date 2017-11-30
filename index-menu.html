@@ -73,7 +73,8 @@
 		<div class="mui-content">
 			<div class="menu-bar">
 				<div class="title">
-					<img class="mui-media-object mui-pull-left" width="42px" src="images/Logo.png">
+					<img class="mui-media-object mui-pull-left" id="applogo" width="42px" src="images/Logo.png">
+
 					<div class="mui-media-body">
 						<span id="content-nickName">Hoya</span>
 					</div>
@@ -82,7 +83,7 @@
 
 					</div>
 				</div>
-				<div class="content">
+				<div class="content" id="menu-bar-content">
 					<div class="content-clock"><span id="clock_time">01:14:27</span> <span id="clock_ap" style="font-size: 28px;"> AM</span></div>
 					<p><span class="mui-pull-right" id="clock_date">2017/11/17</span></p>
 				</div>
@@ -90,28 +91,18 @@
 
 			<ul class="mui-table-view mui-table-view-chevron mui-table-view-inverted" style="color: #ddd;">
 				<li class="mui-table-view-cell">
-					<a class="mui-navigate-right" href="examples/pullrefresh_main.html">
+					<a class="mui-navigate-right" href="doc/timesheets.html">
 						Time Sheet
 					</a>
 				</li>
 				<li class="mui-table-view-cell">
-					<a class="mui-navigate-right" href="examples/offcanvas-drag-left.html">
+					<a class="mui-navigate-right" href="doc/payroll-list.html">
 						Payroll
 					</a>
 				</li>
 				<li class="mui-table-view-cell">
-					<a class="mui-navigate-right" data-title-type="native" href="examples/switches.html">
+					<a class="mui-navigate-right" href="doc/report-card.html">
 						Reports
-					</a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a class="mui-navigate-right" data-title-type="native" href="examples/tableviews-with-swipe.html">
-						列表左滑菜单
-					</a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a class="mui-navigate-right" href="examples/tab-with-viewpagerindicator.html">
-						可拖动式选项卡
 					</a>
 				</li>
 			</ul>
@@ -145,7 +136,6 @@
 			mui.plusReady(function() {
 
 				var state = JSON.parse(localStorage.getItem('$state'));
-				var userId = state.userId;
 				var nickName = state.nickName;
 				var account = state.account;
 				var timeZone = state.timeZone;
@@ -180,6 +170,34 @@
 					view: index,
 					moveMode: "follow"
 				}, function(e) {});
+
+				document.getElementById('menu-bar-content').addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'doc/account_safety.html',
+						id: 'account_safety',
+						show: {
+							autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+							aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true  
+						}
+					})
+				});
+
+				document.getElementById('applogo').addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'info.html',
+						id: 'info',
+						show: {
+							autoShow: true, //页面loaded事件发生后自动显示，默认为true  
+							aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；  
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true  
+						}
+					})
+				})
 
 			})
 			mui('.mui-table-view').on('tap', 'a', function() {
